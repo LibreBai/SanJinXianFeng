@@ -10,7 +10,7 @@ class SanJinXianFengData:
 
     def __init__(self, login_name, login_password):
         self.__server_url="http://221.204.170.88:8184"
-        # 只要符合标准的请求头即可
+        # 只要符合标准的请求头即可，这个是我从模拟器拷贝出来的
         self.__header = \
                 {
                     "Content-Type": "application/json; charset=utf-8",
@@ -37,24 +37,27 @@ class SanJinXianFengData:
                 # 滑动验证码
                 # "verifyCode":"Z2ZlMmZlbmdqaWFiaW4="
                 }
+
         # 第一次post
         response = requests.post(post1_url, json=login_data1, headers=self.__header)
         print(response.json())
         if not response.ok:
             print("登陆失败")
             return False
+
         # 第二次post
         response = requests.post(post2_url, json=login_data2, headers=self.__header)
         print(response.json())
         # 解析返回内容，为啥使用base64解码原因暂不清楚
         userInfo = json.loads(response.text)['data']
         info = json.loads(base64.b64decode(userInfo))
-        print(info)
+        # print(info)
         # print(info['jwtToken'])
         # print(info['id'])
         self.__id = info['id']
         self.__token = info['jwtToken']
 
+        # 组装http头部消息
         self.__token_id_header = {
             "Authorization": "Bearer " + info['jwtToken'],
             "sUserId": str(self.__id),
@@ -74,12 +77,12 @@ class SanJinXianFengData:
         
     def getariticle(self, pagenum=3):
         '''获取一个页面的文章'''
-
         article_num_list = []
         # 获取文章
         ariticle_list_url = self.__server_url +  \
                     "/app/study/list_article/72?size=10&page=" + str(pagenum)
         # print(ariticle_list_url)
+
         response = requests.get(ariticle_list_url, headers=self.__token_id_header)
 
         ariticle_json = json.loads(response.text)['data']
@@ -119,9 +122,9 @@ class SanJinXianFengData:
         quxiaoshoucang_url = self.__server_url + "/app/collectCancelDelete"
 
         quxiaodianzan_respone = requests.post(quxiaodianzan_url, json=data, headers=self.__header)
-        time.sleep(2)
+        time.sleep(1)
         quxiaoshoucang_respone = requests.post(quxiaoshoucang_url, json=data, headers=self.__header)
-        time.sleep(2)
+        time.sleep(1)
         dianzan_respone = requests.post(dianzan_url, json=data, headers=self.__token_id_header)
         time.sleep(1)
         shoucang_respone = requests.post(shoucang_url, json=data, headers=self.__token_id_header)
@@ -136,11 +139,12 @@ class SanJinXianFengData:
             print("收藏成功")
 
     def shitingxuexi(self):
+        '''视听学习'''
         shiting_url = self.__server_url + "/app/businessScore"
         endtime = int(time.time())
-        starttime = endtime - 35
+        starttime = endtime - 10
         payload = {
-                    'userId': str(self.__id),
+                   'userId': str(self.__id),
                    'time':'35',
                    'type': '2',
                    'articleId':'12',
@@ -186,8 +190,10 @@ class SanJinXianFengData:
         return [todayScore['data']['todayScore'], todayScore['data']['yearScore']]
 
     def dati(self, str1):
+        '''答题'''
         tiku_url = self.__server_url + "/app/questionLib"
         uuid_url = self.__server_url + "/app/uuid"
+
         pageData = {"page": 1, "pageSize": 10, "themeId": str1}
         dati_headers = {
             'Connection': 'keep-alive',
@@ -203,9 +209,11 @@ class SanJinXianFengData:
             'Accept-Language': 'zh-CN,en-US;q=0.9',
             'X-Requested-With': 'io.dcloud.H5B1841EE'
         }
+
         answerList = []
         response = requests.post(tiku_url, json=pageData, headers=dati_headers)
         list = json.loads(response.text)
+
         for data in list['data']['list']:
             answerList.append({"selectAnswer": data['correctAnswer'], "grade": data['grade'], "ifCorrect": 1,
                                "questionCode": data['code'], "questionType": data['type']})
