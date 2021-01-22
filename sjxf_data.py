@@ -40,14 +40,14 @@ class SanJinXianFengData:
 
         # 第一次post
         response = requests.post(post1_url, json=login_data1, headers=self.__header)
-        print(response.json())
+        # print(response.json())
         if not response.ok:
             print("登陆失败")
             return False
 
         # 第二次post
         response = requests.post(post2_url, json=login_data2, headers=self.__header)
-        print(response.json())
+        # print(response.json())
         # 解析返回内容，为啥使用base64解码原因暂不清楚
         userInfo = json.loads(response.text)['data']
         info = json.loads(base64.b64decode(userInfo))
@@ -212,9 +212,11 @@ class SanJinXianFengData:
 
         answerList = []
         response = requests.post(tiku_url, json=pageData, headers=dati_headers)
-        list = json.loads(response.text)
+        if response.ok:
+            print("获取题库成功")
+        list1 = json.loads(response.text)
 
-        for data in list['data']['list']:
+        for data in list1['data']['list']:
             answerList.append({"selectAnswer": data['correctAnswer'], "grade": data['grade'], "ifCorrect": 1,
                                "questionCode": data['code'], "questionType": data['type']})
 

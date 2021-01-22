@@ -30,7 +30,7 @@ time.sleep(3)
 sanjin.shitingxuexi()
 time.sleep(3)
 
-for i in range(40):
+for i in range(2):
     sanjin.dati(str(i+1))
     time.sleep(2)
 
