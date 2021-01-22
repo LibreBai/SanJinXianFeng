@@ -11,7 +11,7 @@ import configparser
 class EncryptData:
     def __init__(self):
         self.key = "sanjinxianfengya".encode("utf8")  # 初始化密钥
-        # self.key = "1111111111111111".encode("utf8")  # 初始化密钥
+        # self.key = "1111111111111111".encode("utf8")  # 初始化密钥 这行只是测试密钥对于密码的影响，并无实际意义
         self.length = AES.block_size  # 初始化数据块大小
         self.aes = AES.new(self.key, AES.MODE_ECB)  # 初始化AES,ECB模式的实例
         self.unpad = lambda date: date[0:-ord(date[-1])]
