@@ -24,7 +24,6 @@ class SanJinXianFengData:
 
     def login(self):
         '''登陆账户'''
-        print("开始尝试登陆...")
         post1_url = self.__server_url + "/app/userPrivacy"
         post2_url = self.__server_url + "/app/user/login"
     
@@ -75,7 +74,8 @@ class SanJinXianFengData:
         print("登陆失败")
         return False
         
-    def getariticle(self, pagenum=3):
+    def getariticle(self, pagenum:int=3):
+
         '''获取一个页面的文章'''
         article_num_list = []
         # 获取文章
@@ -88,11 +88,11 @@ class SanJinXianFengData:
         ariticle_json = json.loads(response.text)['data']
 
         for i in range(len(ariticle_json)):
-            article_num_list.append(ariticle_json[i]["id"])
+            article_num_list.append(int(ariticle_json[i]["id"]))
 
         return article_num_list
 
-    def duwenzhang30s(self, article_num):
+    def duwenzhang30s(self, ArticleId:int):
         '''读一篇文章30s'''
         url = self.__server_url + "/app/businessScore"
         endtime = int(time.time())
@@ -100,7 +100,7 @@ class SanJinXianFengData:
         payload = {'userId': self.__id,
                    'time':'35',
                    'type': '1',
-                   'articleId':article_num,
+                   'articleId': str(ArticleId),
                    'ifScore':'1',
                    "appStartTime": starttime
                    }
@@ -109,12 +109,12 @@ class SanJinXianFengData:
         if study_response.ok:
             print("学习文章30s成功")
 
-    def dianzanshoucang(self, ariticle_num):
+    def dianzanshoucang(self, ArticleId:int):
         '''点赞收藏一篇文章'''
         data = {
             "type": "1",
             "userId": self.__id,
-            "uniqueId": ariticle_num,
+            "uniqueId": str(ArticleId),
         } 
         dianzan_url = self.__server_url + "/app/love"
         shoucang_url = self.__server_url + "/app/collect"
@@ -138,7 +138,7 @@ class SanJinXianFengData:
         if shoucang_respone.ok:
             print("收藏成功")
 
-    def shitingxuexi(self):
+    def shitingxuexi(self, MovieOrMusicId:int):
         '''视听学习'''
         shiting_url = self.__server_url + "/app/businessScore"
         endtime = int(time.time())
@@ -147,7 +147,7 @@ class SanJinXianFengData:
                    'userId': str(self.__id),
                    'time':'35',
                    'type': '2',
-                   'articleId':'12',
+                   'articleId': str(MovieOrMusicId),
                    'ifScore':'1',
                    "appStartTime": starttime
                    }
@@ -189,25 +189,46 @@ class SanJinXianFengData:
 
         return [todayScore['data']['todayScore'], todayScore['data']['yearScore']]
 
-    def dati(self, str1):
-        '''答题'''
+    def dati(self, themeId:str=""):
+        '''
+            "id:"",
+            "name":"普通答题"
+			"id":1,
+			"name":"十九大精神"
+			"id":2,
+			"name":"平语近人"
+			"id":3,
+			"name":"疫情防控"
+			"id":4,
+			"name":"党章党规"
+			"id":6,
+			"name":"安全防护"
+        '''
+
         tiku_url = self.__server_url + "/app/questionLib"
         uuid_url = self.__server_url + "/app/uuid"
 
-        pageData = {"page": 1, "pageSize": 10, "themeId": str1}
+        pageData = {"page": 1, "pageSize": 10, "themeId": themeId}
         dati_headers = {
-            'Connection': 'keep-alive',
-            'Pragma': 'no-cache',
-            'Cache-Control': 'no-cache',
-            'Authorization': "Bearer "+self.__token,
-            'Origin': 'http://sxzhdjkhd.sxdygbjy.gov.cn:8081',
-            'User-Agent': 'Mozilla/5.0',
-            'Content-Type': 'application/json',
-            'Accept': '*/*',
-            'Referer': 'http://sxzhdjkhd.sxdygbjy.gov.cn:8081/zhdj-pre/',
-            'Accept-Encoding': 'gzip, deflate',
-            'Accept-Language': 'zh-CN,en-US;q=0.9',
-            'X-Requested-With': 'io.dcloud.H5B1841EE'
+            "Host": "221.204.170.210:8184",
+            "Connection": "keep-alive",
+            #"Content-Length": "37"
+            "Pragma": "no-cache",
+            "Cache-Control": "no-cache",
+            "Authorization": "Bearer "+self.__token,
+            "Origin": "http://sxzhdjkhd.sxdygbjy.gov.cn:8081",
+            "Content-Type": "application/json",
+            "sUserId": str(self.__id),
+            "User-Agent": "Mozilla/5.0 (Linux; Android 7.1.2; \
+            G011C Build/N2G48H; wv) \
+            AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 \
+            Chrome/66.0.3359.158 Mobile Safari/537.36",
+            "version": "3.3.4",
+            "Accept": "*/*",
+            "Referer": "http://sxzhdjkhd.sxdygbjy.gov.cn:8081/zhdj-pre/",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "zh-CN,en-US;q=0.9",
+            "X-Requested-With": "io.dcloud.H5B1841EE",
         }
 
         answerList = []
@@ -217,6 +238,7 @@ class SanJinXianFengData:
         list1 = json.loads(response.text)
 
         for data in list1['data']['list']:
+            time.sleep(1)
             answerList.append({"selectAnswer": data['correctAnswer'], "grade": data['grade'], "ifCorrect": 1,
                                "questionCode": data['code'], "questionType": data['type']})
 
@@ -225,7 +247,7 @@ class SanJinXianFengData:
         uuid = '"' + uuidData['data'] + '"'
         answer = {
                     "userId": str(self.__id),
-                    "method": str1,
+                    "method": "4", '''这里固定数值应该为4'''
                     "totalGrade": "100",
                     "list": answerList,
                     "summaryCode": uuid
@@ -233,3 +255,7 @@ class SanJinXianFengData:
 
         dumps = json.dumps(answer)
         answerResponse = requests.post("http://221.204.170.88:8184/app/question", data=dumps, headers=dati_headers)
+        if answerResponse.ok:
+            print("答题成功")
+        else:
+            print("答题失败")
