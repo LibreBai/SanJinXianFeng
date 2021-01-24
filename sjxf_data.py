@@ -245,9 +245,16 @@ class SanJinXianFengData:
         uuidResponse = requests.get(uuid_url, headers=dati_headers).text
         uuidData = json.loads(uuidResponse)
         uuid = '"' + uuidData['data'] + '"'
+
+        # 普通答题和模块答题返回码有差异
+        if themeId == "":
+            method = "1"
+        else:
+            method = "4"
+
         answer = {
                     "userId": str(self.__id),
-                    "method": "4", '''这里固定数值应该为4'''
+                    "method": method,
                     "totalGrade": "100",
                     "list": answerList,
                     "summaryCode": uuid
