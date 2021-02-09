@@ -43,7 +43,6 @@ class SanJinXianFengLoginInfo:
     
     def __GetUserNameFromConf(self, Path):
         login_msg = configparser.ConfigParser()
-        login_msg.read(self.__UserConfPath)
         login_msg.read(self.__UserConfPath, encoding='utf-8')
         self.__login_name = login_msg["login"]["login_name"]
         self.__login_password = login_msg["login"]["login_password"]
