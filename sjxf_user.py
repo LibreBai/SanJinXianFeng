@@ -38,14 +38,19 @@ class SanJinXianFengLoginInfo:
     # __login_password = ''
 
     def __init__(self, Path="sjxf_user.conf"):
-        self.__UserConfPath = Path
-        self.__GetUserNameFromConf(Path)
+        self.__user_conf_path = Path
     
-    def __GetUserNameFromConf(self, Path):
-        login_msg = configparser.ConfigParser()
-        login_msg.read(self.__UserConfPath)
-        self.__login_name = login_msg["login"]["login_name"]
-        self.__login_password = login_msg["login"]["login_password"]
+        self.__login_msg = configparser.ConfigParser()
+        self.__login_msg.read(self.__user_conf_path)
+
+    def CheckNecessaryParam(self):
+        self.__login_name = self.__login_msg["login"]["login_name"]
+        self.__login_password = self.__login_msg["login"]["login_password"]
+        
+        if len(self.__login_name) != 0 and len(self.__login_password) != 0:
+            return True
+        else:
+            return False
     
     def LoginName(self) -> str:
         return self.__login_name
@@ -57,5 +62,9 @@ class SanJinXianFengLoginInfo:
         Encrypto = EncryptData()
         return Encrypto.encrypt(self.__login_password)
 
-#    def LoginPasswordDecrypt(self):
-#        return 
+
+#login = SanJinXianFengLoginInfo()
+#if login.CheckNecessaryParam():
+#    print("必要参数合法")
+#else:
+#    print("错误，未配置必要登录信息，请修改sjxf_user.conf文件")
