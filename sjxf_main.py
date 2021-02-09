@@ -2,9 +2,12 @@
 
 import time
 import random
+import sys
 
 from sjxf_user import SanJinXianFengLoginInfo
 from sjxf_data import SanJinXianFengData
+from sjxf_logger import SjxfLog
+from sjxf_database import SjxfDatabase
 
 WanSui = """
     =============================
@@ -24,21 +27,31 @@ print(WanSui)
 print(SanJinXianFeng)
 
 # 获取登陆用户名称和密码
+log = SjxfLog()
 login_msg=SanJinXianFengLoginInfo()
-# print(login_msg.LoginName())
-# print(login_msg.LoginPasswordEncrypt())
+if login_msg.CheckNecessaryParam():
+    log.debug("配置信息填写正确，即将进行后续操作")
+else:
+    log.error("请配置相应登陆信息")
+    sys.exit(0)
+
+# 以手机号创建数据库
+database = SjxfDatabase(login_msg.LoginName())
 
 sanjin = SanJinXianFengData(login_msg.LoginName(), login_msg.LoginPasswordEncrypt())
 sanjin.login()
 
+
 jifen = sanjin.jifen()
-print("学习前积分:"+str(jifen[1]))
+if jifen['today_score'] == 15:
+    log.info("今日积分已达15分，不再进行学习")
+    sys.exit(0)
 
 time.sleep(3)
 
 PageNum = random.randint(1, 8)
-ArticleNum = random.randint(1, 10)
-print("今天学习第{}页,第{}和第{}篇文章".format(PageNum, ArticleNum, ArticleNum+1))
+ArticleNum = random.randint(3, 6)
+#print("今天学习第{}页,第{}和第{}篇文章".format(PageNum, ArticleNum, ArticleNum+1))
 
 # 获取文章信息
 article_list = sanjin.getariticle(PageNum)
@@ -57,7 +70,7 @@ time.sleep(2)
 
 # 视听学习
 MovieOrMusic = random.randint(1,20)
-print("今天视听学习第{}篇视频".format(MovieOrMusic))
+#print("今天视听学习第{}篇视频".format(MovieOrMusic))
 sanjin.shitingxuexi(MovieOrMusic)
 time.sleep(3)
 
@@ -74,22 +87,20 @@ ZhuanTiMoKuaiNumList = [1,2,3,4,6]
 
 # 日常答题以及专题学习
 for ExcuteTimeNum in range(2): 
-    print("普通答题")
     sanjin.dati()
     time.sleep(5)
     ZhuanTiMoKuaiNum = random.choice(ZhuanTiMoKuaiNumList)
-    print("今天专题学习答题{}模块".format(ZhuanTiMoKuai[ZhuanTiMoKuaiNum-1]))
     sanjin.dati(str(ZhuanTiMoKuaiNum))
 
 # 获取学习后的积分
 time.sleep(5)
 jifen = sanjin.jifen()
 
-if jifen[0] != 15:
-    print("抱歉，今天未学习够15分，可能是哪里出问题啦")
+if jifen['today_score'] == 15:
+    log.info("今日学习已获得15分")
 else:
-    print("干的漂亮，代码帮你学习获得了15分^v^")
+    log.error("今日学习未达到15分")
 
+data = {'total_points': jifen['total_score'], 'today_points': jifen['today_score']}
+database.insert_data(data)
 
-study_after = sanjin.jifen()
-print("学习后总积分:"+str(study_after[1]))

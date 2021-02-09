@@ -186,7 +186,8 @@ class SanJinXianFengData:
         # print("今天增加的分数是:"+str(todayScore['data']['todayScore']))
         # print("今年累计的分数是:"+str(todayScore['data']['yearScore']))
 
-        return [todayScore['data']['todayScore'], todayScore['data']['yearScore']]
+        return {'today_score': todayScore['data']['todayScore'],
+                'total_score': todayScore['data']['yearScore']}
 
     def dati(self, themeId:str=""):
         '''

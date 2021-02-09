@@ -13,8 +13,8 @@ class SjxfLog:
     def __init__(self, file_name=DEFAULT_LOG_FILE):
 
         # 判断存放日志目录是否存在
-        if not os.path.exists(DEFAULT_LOG_FILE):
-            os.mkdir(os.path.dirname(DEFAULT_LOG_FILE))
+        if not os.path.exists(file_name):
+            os.mkdir(os.path.dirname(file_name))
 
         self.__log = logging.getLogger()
 

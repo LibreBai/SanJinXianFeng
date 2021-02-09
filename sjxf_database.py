@@ -13,11 +13,11 @@ class SjxfDatabase:
     def __init__(self, phone_number, database_path=DEFAULT_DATABASE_FILE):
 
         '''存放数据库的目录是否存在'''
-        if not os.path.exists(DEFAULT_DATABASE_FILE):
-            os.mkdir(os.path.dirname(DEFAULT_DATABASE_FILE))
+        if not os.path.exists(os.path.dirname(database_path)):
+            os.mkdir(os.path.dirname(database_path))
 
         self.__default_database = database_path
-        self.__table_name = str(phone_number)
+        self.__table_name = 'user' + str(phone_number)
 #        print("默认数据库路径为{}".format(database_path))
 
 
@@ -57,7 +57,8 @@ class SjxfDatabase:
 
         self.__insert_sql = "INSERT INTO \"{}\" VALUES(\"{}\", \"{}\", \"{}\")".format(
                              str(self.__table_name),
-                             str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())),
+                            #  str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())),
+                             str(time.strftime("%Y-%m-%d", time.localtime())),
                              int(data['total_points']),
                              int(data['today_points']))
 
@@ -69,6 +70,15 @@ class SjxfDatabase:
             return True
         except sqlite3.Error as e:
 #            print("插入数据失败:{}".format(e.args[0]))
+            self.__update_sql = "update \"{}\" set \"total_points\"=\"{}\", \"today_points\"={} "\
+                                "where \"date\"=\"{}\"".format(
+                                str(self.__table_name),
+                                int(data['total_points']),
+                                int(data['today_points']),
+                                str(time.strftime("%Y-%m-%d", time.localtime())),
+                                ) 
+
+            self.__sql_cursor.execute(self.__update_sql)
             self.__close_database()
             return False
 
