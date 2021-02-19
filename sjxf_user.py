@@ -41,7 +41,7 @@ class SanJinXianFengLoginInfo:
         self.__user_conf_path = Path
     
         self.__login_msg = configparser.ConfigParser()
-        self.__login_msg.read(self.__user_conf_path)
+        self.__login_msg.read(self.__user_conf_path, encoding='utf-8')
 
     def CheckNecessaryParam(self):
         self.__login_name = self.__login_msg["login"]["login_name"]
