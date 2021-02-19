@@ -41,7 +41,6 @@ class SanJinXianFengData:
         response = requests.post(post1_url, json=login_data1, headers=self.__header)
         # print(response.json())
         if not response.ok:
-            print("登陆失败")
             return False
 
         # 第二次post
@@ -69,10 +68,11 @@ class SanJinXianFengData:
         }
 
         if response.ok:
-            print("登陆成功")
+#            print("登陆成功")
             return True
-        print("登陆失败")
-        return False
+#        print("登陆失败")
+        else:
+            return False
         
     def getariticle(self, pagenum:int=3):
 
@@ -107,7 +107,9 @@ class SanJinXianFengData:
 
         study_response = requests.post(url, headers=self.__token_id_header, json=payload)
         if study_response.ok:
-            print("学习文章30s成功")
+            return True
+        else:
+            return False
 
     def dianzanshoucang(self, ArticleId:int):
         '''点赞收藏一篇文章'''
@@ -129,14 +131,11 @@ class SanJinXianFengData:
         time.sleep(1)
         shoucang_respone = requests.post(shoucang_url, json=data, headers=self.__token_id_header)
         time.sleep(1)
-        if quxiaodianzan_respone.ok:
-            print("取消点赞成功")
-        if quxiaoshoucang_respone.ok:
-            print("取消收藏成功")
-        if dianzan_respone.ok:
-            print("点赞成功")
-        if shoucang_respone.ok:
-            print("收藏成功")
+        if quxiaodianzan_respone.ok and quxiaoshoucang_respone.ok and \
+           dianzan_respone.ok and shoucang_respone.ok:
+            return True
+        else:
+            return False
 
     def shitingxuexi(self, MovieOrMusicId:int):
         '''视听学习'''
@@ -154,18 +153,18 @@ class SanJinXianFengData:
 
         response = requests.post(shiting_url, headers=self.__token_id_header, json=payload)
         if response.ok:
-            print("视听学习成功")
             return True
-        print("视听学习失败")
-        return False
+        else:
+            return False
 
     def jifen(self):
         '''积分明细'''
         get_jifen_url = self.__server_url + "/app/home/totayScore"
-        payload =   {
+        payload = {
                     'userId': self.__id,
                     'type': '2'
-                    }
+                  }
+
         headers = {
             'Pragma': 'no-cache',
             'Cache-Control': 'no-cache',
@@ -233,8 +232,10 @@ class SanJinXianFengData:
 
         answerList = []
         response = requests.post(tiku_url, json=pageData, headers=dati_headers)
-        if response.ok:
-            print("获取题库成功")
+        if not response.ok:
+#            print("获取题库成功")
+            return False
+
         list1 = json.loads(response.text)
 
         for data in list1['data']['list']:
@@ -263,6 +264,8 @@ class SanJinXianFengData:
         dumps = json.dumps(answer)
         answerResponse = requests.post("http://221.204.170.88:8184/app/question", data=dumps, headers=dati_headers)
         if answerResponse.ok:
-            print("答题成功")
+#            print("答题成功")
+            return True
         else:
-            print("答题失败")
+#            print("答题失败")
+            return False
