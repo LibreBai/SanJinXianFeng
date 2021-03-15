@@ -2,6 +2,7 @@
 
 import time
 import random
+import sys
 
 from sjxf_user import SanJinXianFengLoginInfo
 from sjxf_data import SanJinXianFengData
@@ -25,6 +26,12 @@ print(SanJinXianFeng)
 
 # 获取登陆用户名称和密码
 login_msg=SanJinXianFengLoginInfo()
+if login_msg.CheckNecessaryParam():
+    print("登陆成功")
+else:
+    print("登录失败")
+    sys.exit()
+
 # print(login_msg.LoginName())
 # print(login_msg.LoginPasswordEncrypt())
 
