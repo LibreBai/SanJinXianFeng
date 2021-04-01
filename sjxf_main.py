@@ -80,6 +80,7 @@ ZhuanTiMoKuai = [
 ZhuanTiMoKuaiNumList = [1,2,3,4,6]
 
 # 日常答题以及专题学习
+'''
 for ExcuteTimeNum in range(2): 
     print("普通答题")
     sanjin.dati()
@@ -87,6 +88,7 @@ for ExcuteTimeNum in range(2):
     ZhuanTiMoKuaiNum = random.choice(ZhuanTiMoKuaiNumList)
     print("今天专题学习答题{}模块".format(ZhuanTiMoKuai[ZhuanTiMoKuaiNum-1]))
     sanjin.dati(str(ZhuanTiMoKuaiNum))
+'''
 
 # 获取学习后的积分
 time.sleep(5)
