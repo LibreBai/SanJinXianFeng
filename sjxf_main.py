@@ -85,12 +85,14 @@ ZhuanTiMoKuai = [
 
 ZhuanTiMoKuaiNumList = [1,2,3,4,6]
 
+"""
 # 日常答题以及专题学习
 for ExcuteTimeNum in range(2): 
     sanjin.dati()
     time.sleep(5)
     ZhuanTiMoKuaiNum = random.choice(ZhuanTiMoKuaiNumList)
     sanjin.dati(str(ZhuanTiMoKuaiNum))
+"""
 
 # 获取学习后的积分
 time.sleep(5)
